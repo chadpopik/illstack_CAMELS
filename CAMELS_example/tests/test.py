@@ -188,8 +188,123 @@ print(counter_gas,"number of zeros in gas")
 print(counter_dm,"number of zeros in dm")
 #print(dm_idx)
 '''
-stacks=np.load('/home/jovyan/home/illstack/CAMELS_example/Batch_NPZ_files/SIMBA/SIMBA_1P_22_2.00259.npz',allow_pickle=True)
+'''
+stacks_014=np.load('/home/jovyan/home/illstack/CAMELS_example/Batch_NPZ_files/SIMBA/SIMBA_1P_22_2.00259.npz',allow_pickle=True)
+com_014=stacks_014['r']
+n_014=stacks_014['n']
+z1=1.48001
+comoving_factor=1.0+z1
+r_014=com_014/comoving_factor
+
+#print("This is with searchrad 20")
+#nhalo_014=n_014.shape[1]
+#for i in np.arange(nhalo_014):
+#    arr=n_014[0,i,:]
+#    if arr[19] !=0:
+#        print("nonzero found at halo",i)
+
+stacks_033=np.load('/home/jovyan/home/illstack/CAMELS_example/Batch_NPZ_files/SIMBA/SIMBA_1P_22_0.0.npz',allow_pickle=True)
+com_033=stacks_033['r']
+n_033=stacks_033['n']
+z2=0.0
+comoving_factor=1.0+z2
+r_033=com_033/comoving_factor
+
+print("with search rad 15")
+nhalo_033=n_033.shape[1]
+for i in np.arange(nhalo_033):
+    arr=n_033[0,i,:]
+    if arr[22] !=0:
+        print("nonzero at bin 20 found at halo",i)
+              
+stacks=np.load('/home/jovyan/home/illstack/CAMELS_example/Batch_NPZ_files/IllustrisTNG/IllustrisTNG_1P_6_0.53761.npz',allow_pickle=True)
+com=stacks['r']
 n=stacks['n']
-print(np.shape(n))
-print(n)
+z=0.53761
+comoving_factor=1.0+z
+r=com/comoving_factor
+
+print("with search rad 12") #for this, all halos go out to bin 20
+nhalo=n.shape[1]
+for i in np.arange(nhalo):
+    arr=n[0,i,:]
+    if arr[20] !=0:
+        print("nonzero at bin 20 found at halo",i)
+
+stacks=np.load('/home/jovyan/home/illstack/CAMELS_example/Batch_NPZ_files/SIMBA/SIMBA_1P_11_2.00259.npz',allow_pickle=True)
+com=stacks['r']
+n=stacks['n']
+mh=stacks['M_Crit200']*1.e10
+z=2.00259
+comoving_factor=1.0+z
+r=com/comoving_factor
+r/=0.677
+print(r/1.e3)
+print("max mh",max(mh))
+
+print("with search rad 44")
+nhalo=n.shape[1]
+print(nhalo)
+for i in np.arange(nhalo):
+    arr=n[0,i,:]
+    if arr[20] !=0:
+        print("nonzero at bin 20 found at halo",i)
+'''
+'''
+nums=np.linspace(22,65,44,dtype='int')
+simulations=[]
+for n in nums:
+    simulations.append('1P_'+str(n))
+
+for s in simulations:
+    stacks=np.load('/home/jovyan/home/illstack/CAMELS_example/Batch_NPZ_files/SIMBA/SIMBA_'+s+'_0.0.npz',allow_pickle=True)
+    n=stacks['n']
+
+    nhalo=n.shape[1]
+    for i in np.arange(nhalo):
+        arr=n[0,i,:]
+        if arr[20] ==0:
+            print("zero at bin 20 of sim",s,"found at halo",i)
+'''
+'''
+basepath='/home/jovyan/Simulations/SIMBA/1P_10/'
+f=h5py.File(basepath+'fof_subhalo_tab_033.hdf5','r')
+keys=f['/Group'].keys()
+#print("SIMBA keys",keys)
+BHMass=f['/Group/GroupBHMass']
+print(np.shape(BHMass))
+
+key=f['/IDs'].keys()
+IDs=f['/IDs/ID']
+print(np.shape(IDs))
+
+g=h5py.File(basepath+'snap_033.hdf5','r')
+
+#haloids=f['/PartType0/HaloID']
+#print("SIMBA halos",np.shape(haloids),haloids[2])
+#basepath='/home/jovyan/Simulations/IllustrisTNG/1P_10/'
+#f=h5py.File(basepath+'snap_033.hdf5','r')
+#keys=f['/PartType0'].keys()
+#print("TNG keys",keys)
+'''
+'''
+base_tng='/home/jovyan/Simulations/IllustrisTNG/1P_22/'
+halos=il.groupcat.loadHalos(base_tng,33,fields=['Group_M_Crit200','GroupMassType','Group_R_Crit200'])
+mh=halos['Group_M_Crit200']
+mh*=1e10
+print(len(mh))
+print(min(mh))
+idx=np.where((mh>=10**11.)&(mh<=10**15.))
+idx=np.array(idx[0])
+print(idx)
+'''
+base_tng='/home/jovyan/Simulations/SIMBA/'
+snap=['033','032','031','030','029','028','027','026','025','024']
+for s in snap:
+    f=h5py.File(base_tng+'1P_22/snap_'+s+'.hdf5','r')
+    z=f['/Header'].attrs[u'Redshift']
+    print(z)
+
+
+
 

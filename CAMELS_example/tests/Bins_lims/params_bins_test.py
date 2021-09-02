@@ -1,0 +1,11 @@
+basepath = '/home/jovyan/Simulations/IllustrisTNG/1P_22/'
+z = 0.00000 
+serial      = True
+search_radius = 10.
+lims        = [10e-2*(1.+z),10e4*(1.+z)]  #[0.01,10] scaled
+bins        = 25
+mass_low    = 10**11.0 
+mass_high   = 10**15.0
+scaled_radius = False 
+mass_kind   = 'halo'
+save_direct = '/home/jovyan/home/illstack/CAMELS_example/Tests/Redshift_test/' 

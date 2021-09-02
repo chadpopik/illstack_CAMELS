@@ -1,0 +1,2 @@
+This run took 68.977408 minutes to run for 446 halos 
+ SearchRad 12.50, profs (1,2,4,7), bins 35
