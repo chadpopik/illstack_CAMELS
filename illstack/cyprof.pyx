@@ -144,6 +144,7 @@ def stackonhalostile(
         np.ndarray        weightsi, #here
         mhmin, mhmax,scaled_radius,mass_kind,
         np.ndarray GroupBHMassi,np.ndarray GroupBHMdoti,
+        np.ndarray GroupCMxi,np.ndarray GroupCMyi,np.ndarray GroupCMzi,
         np.ndarray Group_GasHi,np.ndarray Group_GasHei,np.ndarray Group_GasCi,
         np.ndarray Group_GasNi,np.ndarray Group_GasOi,
         np.ndarray Group_GasNei,np.ndarray Group_GasMgi,
@@ -212,6 +213,9 @@ def stackonhalostile(
     mstar         = mstari[dmh]
     GroupBHMass   = GroupBHMassi[dmh]
     GroupBHMdot   = GroupBHMassi[dmh]
+    GroupCMx      = GroupCMxi[dmh]
+    GroupCMy      = GroupCMyi[dmh]
+    GroupCMz      = GroupCMzi[dmh]
     Group_GasH    = Group_GasHi[dmh]
     Group_GasHe   = Group_GasHei[dmh]
     Group_GasC    = Group_GasCi[dmh]
@@ -256,7 +260,7 @@ def stackonhalostile(
         print it*ntile**2+jt*ntile+kt+1,'of',ntile**3,'done, nhalos =',nhalos
     
     if nhalos == 0:
-        return pcen, pval, pnum, mh, rh, nhalos, GroupFirstSub,sfr,mstar,GroupBHMass,GroupBHMdot,Group_GasH,Group_GasHe,Group_GasC,Group_GasN,Group_GasO,Group_GasNe,Group_GasMg,Group_GasSi,Group_GasFe,GroupGasMetallicity,GroupLen,GroupMass,GroupNsubs,Group_StarH,Group_StarHe,Group_StarC,Group_StarN,Group_StarO,Group_StarNe,Group_StarMg,Group_StarSi,Group_StarFe,GroupStarMetallicity,GroupVelx,GroupVely,GroupVelz,GroupWindMass,M_Crit500,M_Mean200,M_TopHat200,R_Crit500,R_Mean200,R_TopHat200,ID
+        return pcen, pval, pnum, mh, rh, nhalos, GroupFirstSub,sfr,mstar,GroupBHMass,GroupBHMdot,GroupCMx,GroupCMy,GroupCMz,Group_GasH,Group_GasHe,Group_GasC,Group_GasN,Group_GasO,Group_GasNe,Group_GasMg,Group_GasSi,Group_GasFe,GroupGasMetallicity,GroupLen,GroupMass,GroupNsubs,Group_StarH,Group_StarHe,Group_StarC,Group_StarN,Group_StarO,Group_StarNe,Group_StarMg,Group_StarSi,Group_StarFe,GroupStarMetallicity,GroupVelx,GroupVely,GroupVelz,GroupWindMass,M_Crit500,M_Mean200,M_TopHat200,R_Crit500,R_Mean200,R_TopHat200,ID
     
     ninhalos=0
     nphalo = np.zeros(nhalos)
@@ -270,7 +274,7 @@ def stackonhalostile(
             pcen = np.append(pcen,pcenc)
             pval = np.append(pval,pvalc,axis=1) #here
             pnum = np.append(pnum,pnumc,axis=1) #here
-    return pcen,pval,pnum,mh,rh,nhalos,GroupFirstSub,sfr,mstar,GroupBHMass,GroupBHMdot,Group_GasH,Group_GasHe,Group_GasC,Group_GasN,Group_GasO,Group_GasNe,Group_GasMg,Group_GasSi,Group_GasFe,GroupGasMetallicity,GroupLen,GroupMass,GroupNsubs,Group_StarH,Group_StarHe,Group_StarC,Group_StarN,Group_StarO,Group_StarNe,Group_StarMg,Group_StarSi,Group_StarFe,GroupStarMetallicity,GroupVelx,GroupVely,GroupVelz,GroupWindMass,M_Crit500,M_Mean200,M_TopHat200,R_Crit500,R_Mean200,R_TopHat200,ID
+    return pcen,pval,pnum,mh,rh,nhalos,GroupFirstSub,sfr,mstar,GroupBHMass,GroupBHMdot,GroupCMx,GroupCMy,GroupCMz,Group_GasH,Group_GasHe,Group_GasC,Group_GasN,Group_GasO,Group_GasNe,Group_GasMg,Group_GasSi,Group_GasFe,GroupGasMetallicity,GroupLen,GroupMass,GroupNsubs,Group_StarH,Group_StarHe,Group_StarC,Group_StarN,Group_StarO,Group_StarNe,Group_StarMg,Group_StarSi,Group_StarFe,GroupStarMetallicity,GroupVelx,GroupVely,GroupVelz,GroupWindMass,M_Crit500,M_Mean200,M_TopHat200,R_Crit500,R_Mean200,R_TopHat200,ID
 	
 def stackonhalos(
         np.ndarray          posp,
@@ -286,6 +290,7 @@ def stackonhalos(
         np.ndarray       weights, #here
         mhmin, mhmax,scaled_radius,mass_kind,
         np.ndarray GroupBHMass,np.ndarray GroupBHMdot,
+        np.ndarray GroupCMx,np.ndarray GroupCMy,np.ndarray GroupCMz,
         np.ndarray Group_GasH,np.ndarray Group_GasHe,np.ndarray Group_GasC,
         np.ndarray Group_GasN,np.ndarray Group_GasO,
         np.ndarray Group_GasNe,np.ndarray Group_GasMg,
@@ -322,6 +327,8 @@ def stackonhalos(
     GroupFirstSubpr=np.empty((0),float)
     sfrpr,mstarpr= np.empty((0),float),np.empty((0),float)
     GroupBHMasspr,GroupBHMdotpr=np.empty((0),float),np.empty((0),float)
+    GroupCMxpr,GroupCMypr=np.empty((0),float),np.empty((0),float)
+    GroupCMzpr=np.empty((0),float)
     Group_GasHpr,Group_GasHepr=np.empty((0),float),np.empty((0),float)
     Group_GasCpr,Group_GasNpr=np.empty((0),float),np.empty((0),float)
     Group_GasOpr,Group_GasNepr=np.empty((0),float),np.empty((0),float)
@@ -348,7 +355,7 @@ def stackonhalos(
         for jt in np.arange(ntile):
             for kt in np.arange(ntile):
 
-                pcenc, pvalc, pnumc,mhc,rhc,nhalosc,GroupFirstSubc,sfrc,mstarc,GroupBHMassc,GroupBHMdotc,Group_GasHc,Group_GasHec,Group_GasCc,Group_GasNc,Group_GasOc,Group_GasNec,Group_GasMgc,Group_GasSic,Group_GasFec,GroupGasMetallicityc,GroupLenc,GroupMassc,GroupNsubsc,Group_StarHc,Group_StarHec,Group_StarCc,Group_StarNc,Group_StarOc,Group_StarNec,Group_StarMgc,Group_StarSic,Group_StarFec,GroupStarMetallicityc,GroupVelxc,GroupVelyc,GroupVelzc,GroupWindMassc,M_Crit500c,M_Mean200c,M_TopHat200c,R_Crit500c,R_Mean200c,R_TopHat200c,IDc= stackonhalostile(posp,vals,posh,mh,rh,GroupFirstSub,sfr,mstar,it,jt,kt,ntile,volweight,weights,mhmin,mhmax,scaled_radius,mass_kind,GroupBHMass,GroupBHMdot,Group_GasH,Group_GasHe,Group_GasC,Group_GasN,Group_GasO,Group_GasNe,Group_GasMg,Group_GasSi,Group_GasFe,GroupGasMetallicity,GroupLen,GroupMass,GroupNsubs,Group_StarH,Group_StarHe,Group_StarC,Group_StarN,Group_StarO,Group_StarNe,Group_StarMg,Group_StarSi,Group_StarFe,GroupStarMetallicity,GroupVelx,GroupVely,GroupVelz,GroupWindMass,M_Crit500,M_Mean200,M_TopHat200,R_Crit500,R_Mean200,R_TopHat200,ID)   
+                pcenc, pvalc, pnumc,mhc,rhc,nhalosc,GroupFirstSubc,sfrc,mstarc,GroupBHMassc,GroupBHMdotc,GroupCMxc,GroupCMyc,GroupCMzc,Group_GasHc,Group_GasHec,Group_GasCc,Group_GasNc,Group_GasOc,Group_GasNec,Group_GasMgc,Group_GasSic,Group_GasFec,GroupGasMetallicityc,GroupLenc,GroupMassc,GroupNsubsc,Group_StarHc,Group_StarHec,Group_StarCc,Group_StarNc,Group_StarOc,Group_StarNec,Group_StarMgc,Group_StarSic,Group_StarFec,GroupStarMetallicityc,GroupVelxc,GroupVelyc,GroupVelzc,GroupWindMassc,M_Crit500c,M_Mean200c,M_TopHat200c,R_Crit500c,R_Mean200c,R_TopHat200c,IDc= stackonhalostile(posp,vals,posh,mh,rh,GroupFirstSub,sfr,mstar,it,jt,kt,ntile,volweight,weights,mhmin,mhmax,scaled_radius,mass_kind,GroupBHMass,GroupBHMdot,GroupCMx,GroupCMy,GroupCMz,Group_GasH,Group_GasHe,Group_GasC,Group_GasN,Group_GasO,Group_GasNe,Group_GasMg,Group_GasSi,Group_GasFe,GroupGasMetallicity,GroupLen,GroupMass,GroupNsubs,Group_StarH,Group_StarHe,Group_StarC,Group_StarN,Group_StarO,Group_StarNe,Group_StarMg,Group_StarSi,Group_StarFe,GroupStarMetallicity,GroupVelx,GroupVely,GroupVelz,GroupWindMass,M_Crit500,M_Mean200,M_TopHat200,R_Crit500,R_Mean200,R_TopHat200,ID)   
 
                 pcen=np.append(pcen,pcenc)
                 pval=np.append(pval,pvalc,axis=1) #here
@@ -360,6 +367,9 @@ def stackonhalos(
                 mstarpr=np.append(mstarpr,mstarc)
                 GroupBHMasspr=np.append(GroupBHMasspr,GroupBHMassc)
                 GroupBHMdotpr=np.append(GroupBHMdotpr,GroupBHMdotc)
+                GroupCMxpr=np.append(GroupCMxpr,GroupCMxc)
+                GroupCMypr=np.append(GroupCMypr,GroupCMyc)
+                GroupCMzpr=np.append(GroupCMzpr,GroupCMzc)
                 Group_GasHpr=np.append(Group_GasHpr,Group_GasHc)
                 Group_GasHepr=np.append(Group_GasHepr,Group_GasHec)
                 Group_GasCpr=np.append(Group_GasCpr,Group_GasCc)
@@ -395,5 +405,5 @@ def stackonhalos(
                 R_TopHat200pr=np.append(R_TopHat200pr,R_TopHat200c)
                 IDpr=np.append(IDpr,IDc)
                 nhalos += nhalosc
-    return pcen, pval, pnum, mhpr, rhpr, nhalos,GroupFirstSubpr,sfrpr,mstarpr,GroupBHMasspr,GroupBHMdotpr,Group_GasHpr,Group_GasHepr,Group_GasCpr,Group_GasNpr,Group_GasOpr,Group_GasNepr,Group_GasMgpr,Group_GasSipr,Group_GasFepr,GroupGasMetallicitypr,GroupLenpr,GroupMasspr,GroupNsubspr,Group_StarHpr,Group_StarHepr,Group_StarCpr,Group_StarNpr,Group_StarOpr,Group_StarNepr,Group_StarMgpr,Group_StarSipr,Group_StarFepr,GroupStarMetallicitypr,GroupVelxpr,GroupVelypr,GroupVelzpr,GroupWindMasspr,M_Crit500pr,M_Mean200pr,M_TopHat200pr,R_Crit500pr,R_Mean200pr,R_TopHat200pr,IDpr  
+    return pcen, pval, pnum, mhpr, rhpr, nhalos,GroupFirstSubpr,sfrpr,mstarpr,GroupBHMasspr,GroupBHMdotpr,GroupCMxpr,GroupCMypr,GroupCMzpr,Group_GasHpr,Group_GasHepr,Group_GasCpr,Group_GasNpr,Group_GasOpr,Group_GasNepr,Group_GasMgpr,Group_GasSipr,Group_GasFepr,GroupGasMetallicitypr,GroupLenpr,GroupMasspr,GroupNsubspr,Group_StarHpr,Group_StarHepr,Group_StarCpr,Group_StarNpr,Group_StarOpr,Group_StarNepr,Group_StarMgpr,Group_StarSipr,Group_StarFepr,GroupStarMetallicitypr,GroupVelxpr,GroupVelypr,GroupVelzpr,GroupWindMasspr,M_Crit500pr,M_Mean200pr,M_TopHat200pr,R_Crit500pr,R_Mean200pr,R_TopHat200pr,IDpr  
 
