@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-import mpi4py.rc
+#import mpi4py.rc
 import datetime
 from .pdict import *
 
@@ -23,18 +23,18 @@ def initialize(parameterfile):
 
     params = getparameters(parameterfile)
 
-    if params.serial: mpi4py.rc.initialize = False
-    from mpi4py import MPI
+    #if params.serial: mpi4py.rc.initialize = False
+    #from mpi4py import MPI
 
-    if MPI.Is_initialized():
-        params.comm     = MPI.COMM_WORLD
-        params.rank     = params.comm.Get_rank()
-        params.size     = params.comm.Get_size()
-        params.parallel = True
-    else:
-        params.rank     = 0
-        params.size     = 1
-        params.parallel = False
+    #if MPI.Is_initialized():
+    #    params.comm     = MPI.COMM_WORLD
+    #    params.rank     = params.comm.Get_rank()
+    #    params.size     = params.comm.Get_size()
+    #    params.parallel = True
+    #else:
+    params.rank     = 0
+    params.size     = 1
+    params.parallel = False
 
     fmt       = '%H:%M:%S on %m/%d/%Y'
     timestamp = datetime.datetime.now().strftime(fmt)
