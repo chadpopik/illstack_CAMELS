@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy             as np
 import profile_functions
+import h5py
 
 home='/home/jovyan/home/illstack/CAMELS_example/'
  
@@ -9,22 +10,24 @@ home='/home/jovyan/home/illstack/CAMELS_example/'
 #what suite?
 suite='SIMBA'
   
-nums=np.linspace(22,65,44,dtype='int') #0,65,66 for all
+nums=np.linspace(22,65,44,dtype='int') #22,65,44 for all
 simulations=[]
 for n in nums:
     simulations.append('1P_'+str(n))
 
 #what redshifts? either enter snapshot as string, or z as array of floats
-snap=['033']
+snap=['024']
 #what masses?
-mh_low=10**12.0 #CMASS 12.12-13.98
-mh_high=10**12.5
+mh_low=10**12.12 #CMASS 12.12-13.98
+mh_high=10**13.98
 mh_cut=True
 #--------------------------------------------------------------- 
 
 def extract(simulation,snap): #extract the quantities,adjust as necessary
-    z=profile_functions.red_dict[snap] 
-    stacks=np.load(home+'Batch_NPZ_files/'+suite+'/'+suite+'_'+simulation+'_'+str(z)+'.npz',allow_pickle=True)
+    file='/home/jovyan/Simulations/'+suite+'/'+simulation+'/snap_'+snap+'.hdf5'
+    b=h5py.File(file,'r')
+    z=b['/Header'].attrs[u'Redshift']
+    stacks=np.load(home+'Batch_NPZ_files_with_CM/'+suite+'/'+suite+'_'+simulation+'_'+snap+'.npz',allow_pickle=True)
     val            = stacks['val']
     val_dens       = val[0,:]
     val_pres       = val[1,:]
@@ -79,18 +82,19 @@ for j in np.arange(len(simulations)):
         median_masses[simulations[j]]=np.median(mh)
         
         
-        header='R (Mpc), mean rho (Msol/kpc^3), errup (Msol/kpc^3), errlow, std, mean pth (Msol/kpc/s^2), errup(Msol/kpc/s^2), errlow, std, median rho (Msol/kpc^3), median pth (Msol/kpc/s^2) \n nprofs %i, mean mh %f, median mh %f \n Mass range 12-12.5'%(nprofs,np.mean(mh),np.median(mh))
-        np.savetxt(home+'Mopc_profiles/'+suite+'/'+suite+'_'+simulations[j]+'_'+snap[k]+'_uw_12-12.5.txt',np.c_[r_mpc_cut2,mean_unnorm_dens, errup_dens_unnorm,errlow_dens_unnorm,std_dens_unnorm,mean_unnorm_pres,errup_pres_unnorm,errlow_pres_unnorm,std_pres_unnorm,median_unnorm_dens,median_unnorm_pres],header=header)
+        #header='R (Mpc), mean rho (Msol/kpc^3), errup (Msol/kpc^3), errlow, std, mean pth (Msol/kpc/s^2), errup(Msol/kpc/s^2), errlow, std, median rho (Msol/kpc^3), median pth (Msol/kpc/s^2) \n nprofs %i, mean mh %f, median mh %f \n Mass range 12-12.2'%(nprofs,np.mean(mh),np.median(mh))
+        #np.savetxt(home+'Mopc_profiles/'+suite+'/'+suite+'_'+simulations[j]+'_'+snap[k]+'_uw.txt',np.c_[r_mpc_cut2,mean_unnorm_dens, errup_dens_unnorm,errlow_dens_unnorm,std_dens_unnorm,mean_unnorm_pres,errup_pres_unnorm,errlow_pres_unnorm,std_pres_unnorm,median_unnorm_dens,median_unnorm_pres],header=header)
             
         #weighting
         mean_mh,mean_unnorm_dens_w,mean_unnorm_pres_w=profile_functions.mass_distribution_weight(mh,val_dens,val_pres)
         header='R (Mpc), rho (Msol/kpc^3), errup, errlow, std, pth (Msol/kpc/s^2), errup, errlow, std \n nprofs %i, average weighted mh %f'%(nprofs,mean_mh)
         mean_masses_w[simulations[j]]=mean_mh
         np.savetxt(home+'Mopc_profiles/'+suite+'/'+suite+'_'+simulations[j]+'_'+snap[k]+'_w.txt',np.c_[r_mpc_cut2,mean_unnorm_dens_w, errup_dens_unnorm,errlow_dens_unnorm,std_dens_unnorm,mean_unnorm_pres_w,errup_pres_unnorm,errlow_pres_unnorm,std_pres_unnorm],header=header)
-        
-#Adjust this as necessary        
-f=open(home+'Mopc_profiles/'+suite+'/'+suite+'_z'+str(z)+'_halo_masses_12-12.5.txt','a')
+
+
+f=open(home+'Mopc_profiles/'+suite+'/'+suite+'_z'+str(z)+'_halo_masses_12.12-13.98.txt','a')
 f.write("median_masses= %s \n"%str(median_masses))
 f.write("mean_masses_uw=%s \n"%str(mean_masses_uw))
 f.write("mean_masses_w=%s \n"%str(mean_masses_w))
 f.close()
+

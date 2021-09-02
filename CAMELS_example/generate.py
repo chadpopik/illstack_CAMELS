@@ -22,9 +22,10 @@ red_dict={'000':6.0,'001':5.0,'002':4.0,'003':3.5,'004':3.0,'005':2.81329,'006':
 snap=['024']
 
 #adjust for which batch of simulations
-nums=np.linspace(22,65,44,dtype='int') #0,65,66 for all
+#nums=np.linspace(22,65,44,dtype='int') #0,65,66 for all
+nums=np.linspace(0,21,22,dtype='int')
 simulations=['1P_'+str(n) for n in nums]
-#simulations=['LH_0','LH_1']
+
 
 for j in simulations:
     for k in snap:
