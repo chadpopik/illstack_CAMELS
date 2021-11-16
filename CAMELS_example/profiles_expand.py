@@ -4,9 +4,10 @@ import numpy             as np
 sys.path.insert(0,'/home/jovyan/home/illstack/')
 import matplotlib.pyplot as plt
 import illstack as istk
-import mpi4py.rc
+#import mpi4py.rc
 import istk_params as params
 import time
+import h5py
 
 istk.init.initialize('istk_params.py')
 
@@ -228,8 +229,6 @@ ID=np.linspace(0,len(posh)-1,len(posh)) #track the IDs of the group catalog
 vals=np.array(vals) #here
 volweight=np.array(volweight) #here
 weights=np.array(weights) #here
-#print("weights going into cyprof",np.shape(weights))  
-
 
 start=time.time()
 r, val, n, mh, rh, nprofs,GroupFirstSub,sfr,mstar,GroupBHMass,GroupBHMdot,GroupCMx,GroupCMy,GroupCMz,Group_GasH,Group_GasHe,Group_GasC,Group_GasN,Group_GasO,Group_GasNe,Group_GasMg,Group_GasSi,Group_GasFe,GroupGasMetallicity,GroupLen,GroupMass,GroupNsubs,Group_StarH,Group_StarHe,Group_StarC,Group_StarN,Group_StarO,Group_StarNe,Group_StarMg,Group_StarSi,Group_StarFe,GroupStarMetallicity,GroupVelx,GroupVely,GroupVelz,GroupWindMass,M_Crit500,M_Mean200,M_TopHat200,R_Crit500,R_Mean200,R_TopHat200,ID= istk.cyprof.stackonhalos(posp,vals,posh,mh,rh,GroupFirstSub,sfr,mstar,ntile,volweight,weights,mhmin, mhmax,scaled_radius,mass_kind,GroupBHMass,GroupBHMdot,GroupCMx,GroupCMy,GroupCMz,Group_GasH,Group_GasHe,Group_GasC,Group_GasN,Group_GasO,Group_GasNe,Group_GasMg,Group_GasSi,Group_GasFe,GroupGasMetallicity,GroupLen,GroupMass,GroupNsubs,Group_StarH,Group_StarHe,Group_StarC,Group_StarN,Group_StarO,Group_StarNe,Group_StarMg,Group_StarSi,Group_StarFe,GroupStarMetallicity,GroupVelx,GroupVely,GroupVelz,GroupWindMass,M_Crit500,M_Mean200,M_TopHat200,R_Crit500,R_Mean200,R_TopHat200,ID)
@@ -238,11 +237,64 @@ val=np.reshape(val,(len(volweight),nprofs,istk.params.bins)) #here
 n  =np.reshape(n,  (len(volweight),nprofs,istk.params.bins)) #here
 
 #Change name of npz file here
-np.savez(save_direct+suite+'/'+suite+'_'+simulation+'_'+str(sys.argv[10])+'.npz',r=r[0],val=val,n=n,M_Crit200=mh,R_Crit200=rh,nprofs=nprofs,nbins=istk.params.bins,GroupFirstSub=GroupFirstSub,sfr=sfr,mstar=mstar,GroupBHMass=GroupBHMass,GroupBHMdot=GroupBHMdot,GroupCMx=GroupCMx,GroupCMy=GroupCMy,GroupCMz=GroupCMz,Group_GasH=Group_GasH,Group_GasHe=Group_GasHe,Group_GasC=Group_GasC,Group_GasN=Group_GasN,Group_GasO=Group_GasO,Group_GasNe=Group_GasNe,Group_GasMg=Group_GasMg,Group_GasSi=Group_GasSi,Group_GasFe=Group_GasFe,GroupGasMetallicity=GroupGasMetallicity,GroupLen=GroupLen,GroupMass=GroupMass,GroupNsubs=GroupNsubs,Group_StarH=Group_StarH,Group_StarHe=Group_StarHe,Group_StarC=Group_StarC,Group_StarN=Group_StarN,Group_StarO=Group_StarO,Group_StarNe=Group_StarNe,Group_StarMg=Group_StarMg,Group_StarSi=Group_StarSi,Group_StarFe=Group_StarFe,GroupStarMetallicity=GroupStarMetallicity,GroupVelx=GroupVelx,GroupVely=GroupVely,GroupVelz=GroupVelz,GroupWindMass=GroupWindMass,M_Crit500=M_Crit500,M_Mean200=M_Mean200,M_TopHat200=M_TopHat200,R_Crit500=R_Crit500,R_Mean200=R_Mean200,R_TopHat200=R_TopHat200,ID=ID)
+#np.savez(save_direct+suite+'/'+suite+'_'+simulation+'_'+str(sys.argv[10])+'.npz',r=r[0],Profiles=val,n=n,Group_M_Crit200=mh,Group_R_Crit200=rh,nprofs=nprofs,nbins=istk.params.bins,GroupFirstSub=GroupFirstSub,GroupSFR=sfr,GroupMassType_Stellar=mstar,GroupBHMass=GroupBHMass,GroupBHMdot=GroupBHMdot,GroupCMx=GroupCMx,GroupCMy=GroupCMy,GroupCMz=GroupCMz,Group_GasH=Group_GasH,Group_GasHe=Group_GasHe,Group_GasC=Group_GasC,Group_GasN=Group_GasN,Group_GasO=Group_GasO,Group_GasNe=Group_GasNe,Group_GasMg=Group_GasMg,Group_GasSi=Group_GasSi,Group_GasFe=Group_GasFe,GroupGasMetallicity=GroupGasMetallicity,GroupLen=GroupLen,GroupMass=GroupMass,GroupNsubs=GroupNsubs,Group_StarH=Group_StarH,Group_StarHe=Group_StarHe,Group_StarC=Group_StarC,Group_StarN=Group_StarN,Group_StarO=Group_StarO,Group_StarNe=Group_StarNe,Group_StarMg=Group_StarMg,Group_StarSi=Group_StarSi,Group_StarFe=Group_StarFe,GroupStarMetallicity=GroupStarMetallicity,GroupVelx=GroupVelx,GroupVely=GroupVely,GroupVelz=GroupVelz,GroupWindMass=GroupWindMass,Group_M_Crit500=M_Crit500,Group_M_Mean200=M_Mean200,Group_M_TopHat200=M_TopHat200,Group_R_Crit500=R_Crit500,Group_R_Mean200=R_Mean200,Group_R_TopHat200=R_TopHat200,ID=ID)
+
+#save as hdf5 file, think of a better way to do this- I'd do for loop but some have different dtypes, and Profiles/n saves as an object for some reason so needs to be changed 
+file_hdf5=h5py.File(save_direct+suite+'_'+simulation+'_'+str(sys.argv[10])+'_test.hdf5','w',track_order=True)
+file_hdf5.create_dataset('r',data=r[0],track_order=True,dtype='float64')
+file_hdf5.create_dataset('Profiles',data=val.astype(np.float64),track_order=True,dtype='float64')
+file_hdf5.create_dataset('n',data=n.astype(np.float64),track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_M_Crit200',data=mh,track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_R_Crit200',data=rh,track_order=True,dtype='float64')
+file_hdf5.create_dataset('nprofs',data=nprofs,track_order=True,dtype='int64')
+file_hdf5.create_dataset('nbins',data=istk.params.bins,track_order=True,dtype='int64')
+file_hdf5.create_dataset('GroupFirstSub',data=GroupFirstSub,track_order=True,dtype='float64')
+file_hdf5.create_dataset('GroupSFR',data=sfr,track_order=True,dtype='float64')
+file_hdf5.create_dataset('GroupMassType_Stellar',data=mstar,track_order=True,dtype='float64')
+file_hdf5.create_dataset('GroupBHMass',data=GroupBHMass,track_order=True,dtype='float64')
+file_hdf5.create_dataset('GroupBHMdot',data=GroupBHMdot,track_order=True,dtype='float64')
+file_hdf5.create_dataset('GroupCMx',data=GroupCMx,track_order=True,dtype='float32')
+file_hdf5.create_dataset('GroupCMy',data=GroupCMy,track_order=True,dtype='float32')
+file_hdf5.create_dataset('GroupCMz',data=GroupCMz,track_order=True,dtype='float32')
+file_hdf5.create_dataset('Group_GasH',data=Group_GasH,track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_GasHe',data=Group_GasHe,track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_GasC',data=Group_GasC,track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_GasN',data=Group_GasN,track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_GasO',data=Group_GasO,track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_GasNe',data=Group_GasNe,track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_GasMg',data=Group_GasMg,track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_GasSi',data=Group_GasSi,track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_GasFe',data=Group_GasFe,track_order=True,dtype='float64')
+file_hdf5.create_dataset('GroupGasMetallicity',data=GroupGasMetallicity,track_order=True,dtype='float64')
+file_hdf5.create_dataset('GroupLen',data=GroupLen,track_order=True,dtype='float64')
+file_hdf5.create_dataset('GroupMass',data=GroupMass,track_order=True,dtype='float64')
+file_hdf5.create_dataset('GroupNsubs',data=GroupNsubs,track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_StarH',data=Group_StarH,track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_StarHe',data=Group_StarHe,track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_StarC',data=Group_StarC,track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_StarN',data=Group_StarN,track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_StarO',data=Group_StarO,track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_StarNe',data=Group_StarNe,track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_StarMg',data=Group_StarMg,track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_StarSi',data=Group_StarSi,track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_StarFe',data=Group_StarFe,track_order=True,dtype='float64')
+file_hdf5.create_dataset('GroupStarMetallicity',data=GroupStarMetallicity,track_order=True,dtype='float64')
+file_hdf5.create_dataset('GroupVelx',data=GroupVelx,track_order=True,dtype='float64')
+file_hdf5.create_dataset('GroupVely',data=GroupVely,track_order=True,dtype='float64')
+file_hdf5.create_dataset('GroupVelz',data=GroupVelz,track_order=True,dtype='float64')
+file_hdf5.create_dataset('GroupWindMass',data=GroupWindMass,track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_M_Crit500',data=M_Crit500,track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_M_Mean200',data=M_Mean200,track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_M_TopHat200',data=M_TopHat200,track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_R_Crit500',data=R_Crit500,track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_R_Mean200',data=R_Mean200,track_order=True,dtype='float64')
+file_hdf5.create_dataset('Group_R_TopHat200',data=R_TopHat200,track_order=True,dtype='float64')
+file_hdf5.create_dataset('ID',data=ID,track_order=True,dtype='int64')
+file_hdf5.close()
 
 end=time.time()
 time_elapsed=(end-start)/60.
-f=open('/home/jovyan/home/illstack/CAMELS_example/Batch_Checks/'+suite+'/'+simulation+'_'+str(sys.argv[10])+'.txt','w')
-f.write("This run took %f minutes to run for %i halos \n SearchRad %.2f, profs (1,2,4,7)"%(time_elapsed,nprofs,params.search_radius))
-f.close()
+#f=open('/home/jovyan/home/illstack/CAMELS_example/Batch_Checks/'+suite+'/'+simulation+'_'+str(sys.argv[10])+'.txt','w')
+#f.write("This run took %f minutes to run for %i halos \n SearchRad %.2f, profs (1,2,4,7)"%(time_elapsed,nprofs,params.search_radius))
+#f.close()
 

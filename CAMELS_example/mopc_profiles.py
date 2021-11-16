@@ -7,8 +7,7 @@ home='/home/jovyan/home/illstack/CAMELS_example/'
  
 
 #-----------------------------------input section
-#what suite?
-suite='SIMBA'
+suite='IllustrisTNG'
   
 nums=np.linspace(22,65,44,dtype='int') #22,65,44 for all
 simulations=[]
@@ -19,7 +18,7 @@ for n in nums:
 snap=['024']
 #what masses?
 mh_low=10**12.12 #CMASS 12.12-13.98
-mh_high=10**13.98
+mh_high=10**13.2 #remove the highest mass halo from all
 mh_cut=True
 #--------------------------------------------------------------- 
 
@@ -28,7 +27,7 @@ def extract(simulation,snap): #extract the quantities,adjust as necessary
     b=h5py.File(file,'r')
     z=b['/Header'].attrs[u'Redshift']
     stacks=np.load(home+'Batch_NPZ_files_with_CM/'+suite+'/'+suite+'_'+simulation+'_'+snap+'.npz',allow_pickle=True)
-    val            = stacks['val']
+    val            = stacks['Profiles']
     val_dens       = val[0,:]
     val_pres       = val[1,:]
     val_metal_gmw  = val[2,:]
@@ -36,11 +35,11 @@ def extract(simulation,snap): #extract the quantities,adjust as necessary
     bins           = stacks['nbins']
     r              = stacks['r']
     nprofs         = stacks['nprofs']
-    mh             = stacks['M_Crit200'] #units 1e10 Msol/h, M200c
-    rh             = stacks['R_Crit200'] #R200c
+    mh             = stacks['Group_M_Crit200'] #units 1e10 Msol/h, M200c
+    rh             = stacks['Group_R_Crit200'] #R200c
     GroupFirstSub  = stacks['GroupFirstSub']
-    sfr            = stacks['sfr'] #Msol/yr
-    mstar          = stacks['mstar'] #1e10 Msol/h
+    sfr            = stacks['GroupSFR'] #Msol/yr
+    mstar          = stacks['GroupMassType_Stellar'] #1e10 Msol/h
     return z,val_dens,bins,r,val_pres,nprofs,mh,rh,GroupFirstSub,sfr,mstar,val_metal_gmw,val_temp_gmw
 
 mean_masses_uw={}
@@ -92,7 +91,7 @@ for j in np.arange(len(simulations)):
         np.savetxt(home+'Mopc_profiles/'+suite+'/'+suite+'_'+simulations[j]+'_'+snap[k]+'_w.txt',np.c_[r_mpc_cut2,mean_unnorm_dens_w, errup_dens_unnorm,errlow_dens_unnorm,std_dens_unnorm,mean_unnorm_pres_w,errup_pres_unnorm,errlow_pres_unnorm,std_pres_unnorm],header=header)
 
 
-f=open(home+'Mopc_profiles/'+suite+'/'+suite+'_z'+str(z)+'_halo_masses_12.12-13.98.txt','a')
+f=open(home+'Mopc_profiles/'+suite+'/'+suite+'_z'+str(z)+'_halo_masses_12.12-13.2.txt','a')
 f.write("median_masses= %s \n"%str(median_masses))
 f.write("mean_masses_uw=%s \n"%str(mean_masses_uw))
 f.write("mean_masses_w=%s \n"%str(mean_masses_w))
