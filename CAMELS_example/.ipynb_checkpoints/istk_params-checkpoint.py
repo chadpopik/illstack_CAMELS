@@ -1,5 +1,5 @@
-basepath = '/home/jovyan/Data/Sims/IllustrisTNG/1P/1P_p2_0/'
-z = 3.99609 
+basepath = '/home/jovyan/Data/Sims/IllustrisTNG/1P/1P_p13_0/'
+z = 0.53726 
 serial      = True
 search_radius = 15.
 lims        = [10e-2*(1.+z),10e4*(1.+z)]  #[0.01,10] scaled

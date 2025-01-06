@@ -3,12 +3,6 @@ clean.sh
 install.sh
 push.sh
 setup.py
-example/example.py
-example/generate.py
-example/generate_old.py
-example/getprof.sh
-example/istk-params_ill.txt
-example/istk-params_tng.txt
 illstack/CompHaloProperties.py
 illstack/__init__.py
 illstack/cyprof.c
@@ -24,7 +18,3 @@ illstack.egg-info/SOURCES.txt
 illstack.egg-info/dependency_links.txt
 illstack.egg-info/not-zip-safe
 illstack.egg-info/top_level.txt
-scripts/params_tng.py
-scripts/profiles_mult.py
-scripts/showstacks_no_cut.py
-scripts/illstack/io.py
