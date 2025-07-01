@@ -3,45 +3,41 @@ import subprocess
 import time
 import h5py
 
-suite='IllustrisTNG' #IllustrisTNG,SIMBA
-                          
-prof1='gasdens'
-prof2='gaspth'
-prof3='metals_uw'
-prof4='metals_gmw' #gas mass weighted
-prof5='gasmass'
-prof6='gastemp_uw'
-prof7='gastemp_gmw'
-prof8='metals_emm'
-prof9='gastemp_emm'
-
-#these are rounded redshifts, just use for reference don't use the values
-red_dict={'000':6.0,'001':5.0,'002':4.0,'003':3.5,'004':3.0,'005':2.81329,'006':2.63529,'007':2.46560,'008':2.30383,'009':2.14961,'010':2.00259,'011':1.86243,'012':1.72882,'013':1.60144,'014':1.48001,'015':1.36424,'016':1.25388,'017':1.14868,'018':1.04838,'019':0.95276,'020':0.86161,'021':0.77471,'022':0.69187,'023':0.61290,'024':0.53761,'025':0.46584,'026':0.39741,'027':0.33218,'028':0.27,'029':0.21072,'030':0.15420,'031':0.10033,'032':0.04896,'033':0.0}
-
-#snap=red_dict.keys() #for all snaps
-snap=['024']
+suite='IllustrisTNG'  #IllustrisTNG,SIMBA
+suiteset='1P'  # 1P, LH, zoom
 
 #adjust for which batch of simulations
-#nums=np.linspace(22,65,44,dtype='int') #0,65,66 for all
-nums=np.linspace(1,21,22,dtype='int')
-simulations=['1P_p'+str(n) for n in nums]
+nums=np.arange(51,66, dtype='int')
+simulations=[f"{n}" for n in nums if n not in [5, 16, 27, 38, 49, 60]]
+
+#snap=red_dict.keys() #for all snaps
+snaps=['024']
+
+profs=['gasdens','gaspth']
 
 
-for j in simulations:
-    for k in snap:
-        file='/home/jovyan/Data/Sims/'+suite+'/1P/'+j+'_0/snapshot_'+k+'.hdf5'
-        b=h5py.File(file,'r')
-        z=b['/Header'].attrs[u'Redshift']
+
+savepath = f"/home/jovyan/home/illstack_CAMELS/CAMELS_example/Batch_hdf5_files/{suite}/{suiteset}/"
+for sim in simulations:
+    # simbasepath = f"/home/jovyan/Data/Sims/{suite}/{suiteset}/{suiteset}_{sim}/"
+    simbasepath = f"/home/jovyan/OLD1P/Sims/{suite}/{suiteset}/{suiteset}_{sim}/"
+    for snap in snaps:
+        # snapfile=h5py.File(simbasepath+f"snapshot_{snap}.hdf5",'r')
+        snapfile=h5py.File(simbasepath+f"snap_{snap}.hdf5",'r')
+        z=snapfile['/Header'].attrs[u'Redshift']
+        h = snapfile['/Header'].attrs[u'HubbleParam']
         
-        f=open('istk_params.py','r')
-        lines=f.readlines()
-        lines[0]="basepath = '/home/jovyan/Data/Sims/"+suite+"/1P/"+j+"_0/'\n"
-        lines[1]="z = %.5f \n"%z
-        f.close()
+        paramfile=open('istk_params.py','r')
+        lines=paramfile.readlines()
+        lines[0]=f"basepath = '{simbasepath}'\n"
+        lines[1]=f"z = {z} \n"
+        lines[10]=f"save_direct = '{savepath}'\n"
+        lines[11]=f"h = {h}"
+        paramfile.close()
     
-        f=open('istk_params.py','w')
-        f.writelines(lines)
-        f.close()
+        paramfile=open('istk_params.py','w')
+        paramfile.writelines(lines)
+        paramfile.close()
     
         #update the basepath for each sim/snap, clunky but works
         f=open('istk_params.py','r')
@@ -55,7 +51,7 @@ for j in simulations:
 
         g='getprof_temp_profiles.sh'
         print('#!/bin/bash',file=open(g,'w'))   
-        print('python', 'profiles_expand.py',prof1,prof2,prof3,prof4,prof5,prof6,prof7,prof8,prof9,k,suite,j,file=open(g,'a'))
+        print('python', 'profiles_expand.py',suite,suiteset,sim,snap,*profs,file=open(g,'a'))
         start=time.time()
         subprocess.call(['./getprof_temp_profiles.sh'],shell=True)
         

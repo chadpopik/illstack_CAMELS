@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy             as np
+import h5py
 
-home='/home/jovyan/home/illstack/CAMELS_example/'
+
+home='/home/jovyan/home/illstack_CAMELS/CAMELS_example/'
  
 suite='IllustrisTNG'
 ASN1=np.array([0.25,0.33,0.44,0.57,0.76,1.0,1.3,1.7,2.3,3.0,4.0])
@@ -82,7 +84,7 @@ def get_errors(arr):
 
 def extract(simulation,snap): #extract the quantities,adjust as necessary
     z=red_dict[snap] 
-    stacks=np.load(home+'Batch_NPZ_files/'+suite+'/'+suite+'_'+simulation+'_'+str(z)+'.npz',allow_pickle=True)
+    stacks=h5py.File(home+'Batch_hdf5_files/'+suite+'/test/'+suite+'_'+simulation+'_'+str(z)+'.h5', 'r')
     val            = stacks['val']
     val_dens       = val[0,:]
     val_pres       = val[1,:]
