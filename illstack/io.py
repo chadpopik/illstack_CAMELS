@@ -1,6 +1,6 @@
 import sys
 sys.path.insert(0,'/home/jovyan/home/')
-sys.path.append('/home/jovyan/home/illustris_python')
+sys.path.append('/home/jovyan/home/CAMELS_stuff/illustris_python')
 import illustris_python as il
 import numpy as np
 from . import params

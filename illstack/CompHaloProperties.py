@@ -34,9 +34,7 @@ class CompHaloProp:
             rad=rad
             Volume = 4.*np.pi/3. * (self.r2**3 - self.r1**3)
 
-        #data_qw = np.apply_along_axis(lambda x:np.histogram(rad,bins=self.radbins, weights=x*weight),1,quant) #2d quant, 1d weight
-        #data_qw=np.histogram(rad,bins=self.radbins,weights=quant*weight) #original
-        #BinCount = np.histogram(rad, bins=self.radbins)
+
         
         BinValue_multi=[]
         BinCount_multi=[]
